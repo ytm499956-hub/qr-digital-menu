@@ -297,8 +297,7 @@
                     </button>
                     <button onclick="closeModal('adminPanelModal')" class="text-zinc-400 hover:text-white w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
                         <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
+                    </button>                </div>
             </div>
 
             <!-- Dashboard Action Toolbar -->
@@ -555,12 +554,13 @@
         const firebaseConfig = typeof __firebase_config !== 'undefined'
             ? JSON.parse(__firebase_config)
             : {
-                apiKey: "AIzaSyDemoKeyFallbackConfigOnly",
-                authDomain: "demo.firebaseapp.com",
-                projectId: "demo-project",
-                storageBucket: "demo.appspot.com",
-                messagingSenderId: "123456789",
-                appId: "1:123456789:web:demo"
+                apiKey: "AIzaSyCwilgm2bYU4zCsjtnCmq89j2JriyOB7GA",
+                authDomain: "qr-digital-menu-72c1f.firebaseapp.com",
+                projectId: "qr-digital-menu-72c1f",
+                storageBucket: "qr-digital-menu-72c1f.firebasestorage.app",
+                messagingSenderId: "1048006805049",
+                appId: "1:1048006805049:web:0b01bb7dff265aba696fe8",
+                measurementId: "G-MRYG9GECY8"
             };
 
         // App State
@@ -597,8 +597,7 @@
             { id: 'm4', categoryId: 'shawarma-meals', name: 'بوكس الشاورما', desc: 'ساندوتشات شاورما مقطعة + بطاطس عائلية + عيش محمص + صوصات متنوعة', price: 390, badge: 'عائلي', available: true },
             { id: 'm5', categoryId: 'shawarma-meals', name: 'بوكس الشاورما والكرسبي', desc: 'ساندوتشات شاورما مقطعة + صدور فراخ كرسبي + بطاطس + عيش محمص + صوصات', price: 430, badge: 'ملكي', available: true },
 
-            { id: 'f1', categoryId: 'fatteh', name: 'فتة شاورما فراخ (وسط)', desc: 'أرز بسمتي مبهر + شاورما فراخ + ثومية غنية + عيش صاج محمص', price: 115, badge: 'الأعلى تقييماً', available: true },
-            { id: 'f2', categoryId: 'fatteh', name: 'فتة شاورما فراخ (كبير)', desc: 'أرز بسمتي مبهر + شاورما فراخ مضاعفة + ثومية + عيش محمص', price: 135, badge: '', available: true },
+            { id: 'f1', categoryId: 'fatteh', name: 'فتة شاورما فراخ (وسط)', desc: 'أرز بسمتي مبهر + شاورما فراخ + ثومية غنية + عيش صاج محمص', price: 115, badge: 'الأعلى تقييماً', available: true },            { id: 'f2', categoryId: 'fatteh', name: 'فتة شاورما فراخ (كبير)', desc: 'أرز بسمتي مبهر + شاورما فراخ مضاعفة + ثومية + عيش محمص', price: 135, badge: '', available: true },
             { id: 'f3', categoryId: 'fatteh', name: 'فتة كرسبي (وسط)', desc: 'أرز بسمتي مبهر + قطع دجاج كرسبي مقرمشة + ثومية + عيش محمص', price: 115, badge: '', available: true },
 
             { id: 'g1', categoryId: 'grill', name: 'فرخة مشوية كاملة', desc: 'تقدم مع: أرز بسمتي + بطاطس + ثومية + مخلل + خبز صاج', price: 360, badge: 'عائلي', available: true },
@@ -897,7 +896,6 @@
             closeModal('orderModal');
             showToast('تم تفريغ كشف الطلبات');
         };
-
         function updateOrderTrayUI() {
             const trayBar = document.getElementById('orderTrayBar');
             const totalCount = orderTray.reduce((acc, curr) => acc + curr.qty, 0);
@@ -1197,8 +1195,7 @@
 
                 closeModal('itemFormModal');
             } catch (err) {
-                console.error("Error saving item:", err);
-                showToast("خطأ أثناء حفظ البيانات");
+                console.error("Error saving item:", err);                showToast("خطأ أثناء حفظ البيانات");
             }
         };
 
