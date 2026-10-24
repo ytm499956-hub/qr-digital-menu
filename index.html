@@ -613,19 +613,14 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                // Public visitors use anonymous auth; the owner signs in with email/password.
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
+                // Visitors can read the public menu without signing in.
+                // Only the owner account signs in to make protected changes.
                 onAuthStateChanged(auth, (user) => {
                     currentUser = user;
                     isAdminLoggedIn = !!user && !user.isAnonymous && user.uid === ADMIN_UID;
                     const adminBtn = document.getElementById('adminBtnText');
                     if (adminBtn) adminBtn.textContent = isAdminLoggedIn ? 'لوحة التحكم (نشط)' : 'لوحة التحكم';
-                    if (user) subscribeToFirestore();
+                    subscribeToFirestore();
                 });
             } catch (error) {
                 console.error("Firebase init failed, fallback to memory:", error);
@@ -640,7 +635,7 @@
 
         // Firestore Realtime Listener
         function subscribeToFirestore() {
-            if (!currentUser) return;
+            if (!db) return;
             const itemsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'menuItems');
 
             onSnapshot(itemsCollection, (snapshot) => {
