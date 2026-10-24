@@ -250,32 +250,26 @@
         </div>
     </div>
 
-    <!-- MODAL 2: ADMIN AUTH (PIN LOGIN) -->
+    <!-- MODAL 2: ADMIN AUTH (EMAIL AND PASSWORD) -->
     <div id="adminAuthModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 text-center shadow-2xl relative">
             <button onclick="closeModal('adminAuthModal')" class="absolute top-3 left-3 text-zinc-400 hover:text-white w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-
             <div class="w-12 h-12 rounded-full bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center mx-auto mb-3 text-xl">
                 <i class="fa-solid fa-lock"></i>
             </div>
             <h3 class="font-bold text-white text-lg mb-1">دخول لوحة التحكم</h3>
-            <p class="text-xs text-zinc-400 mb-4">أدخل الرقم السري لإدارة أصناف وأسعار المنيو</p>
-
+            <p class="text-xs text-zinc-400 mb-4">سجّل الدخول ببريد المسؤول وكلمة المرور</p>
             <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <div>
-                    <input type="password" id="pinInput" maxlength="6" placeholder="الرقم السري (الافتراضي: 1234)"
-                           class="w-full text-center tracking-widest text-lg font-bold bg-zinc-950 text-white placeholder-zinc-600 rounded-xl px-4 py-3 border border-zinc-700 focus:outline-none focus:border-orange-500">
-                </div>
-                <p id="pinError" class="text-xs text-red-400 hidden">الرقم السري غير صحيح!</p>
-                <button type="submit" class="w-full gold-gradient-bg text-zinc-950 font-bold py-2.5 rounded-xl text-sm shadow-md transition">
-                    تسجيل الدخول
-                </button>
+                <input type="email" id="adminEmailInput" autocomplete="username" required placeholder="البريد الإلكتروني"
+                       class="w-full text-right bg-zinc-950 text-white placeholder-zinc-600 rounded-xl px-4 py-3 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                <input type="password" id="adminPasswordInput" autocomplete="current-password" required placeholder="كلمة المرور"
+                       class="w-full text-right bg-zinc-950 text-white placeholder-zinc-600 rounded-xl px-4 py-3 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                <p id="adminLoginError" class="text-xs text-red-400 hidden"></p>
+                <button type="submit" class="w-full gold-gradient-bg text-zinc-950 font-bold py-2.5 rounded-xl text-sm shadow-md transition">تسجيل الدخول</button>
                 <div class="pt-1">
-                    <button type="button" onclick="handleForgotPin()" class="text-xs text-amber-400/90 hover:text-amber-300 hover:underline">
-                        نسيت الرقم السري؟ (إعادة تعيين للرقم الافتراضي 1234)
-                    </button>
+                    <button type="button" onclick="handleForgotPin()" class="text-xs text-amber-400/90 hover:text-amber-300 hover:underline">نسيت كلمة المرور؟ إرسال رابط إعادة التعيين</button>
                 </div>
             </form>
         </div>
@@ -546,11 +540,12 @@
     <!-- FIREBASE MODULE & APPLICATION CODE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global Variables & Configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'qasr-el-sham-app';
+        const ADMIN_UID = "khw0e6GUkZZReBQ9kl7xlgiQzNf2";
         const firebaseConfig = typeof __firebase_config !== 'undefined'
             ? JSON.parse(__firebase_config)
             : {
@@ -570,7 +565,6 @@
         let searchQuery = '';
         let orderTray = [];
         let isAdminLoggedIn = false;
-        let adminPin = "1234";
 
         // Categories Configuration
         const menuCategories = [
@@ -619,7 +613,7 @@
                 auth = getAuth(app);
                 db = getFirestore(app);
 
-                // Authentication Setup
+                // Public visitors use anonymous auth; the owner signs in with email/password.
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
@@ -628,9 +622,10 @@
 
                 onAuthStateChanged(auth, (user) => {
                     currentUser = user;
-                    if (user) {
-                        subscribeToFirestore();
-                    }
+                    isAdminLoggedIn = !!user && !user.isAnonymous && user.uid === ADMIN_UID;
+                    const adminBtn = document.getElementById('adminBtnText');
+                    if (adminBtn) adminBtn.textContent = isAdminLoggedIn ? 'لوحة التحكم (نشط)' : 'لوحة التحكم';
+                    if (user) subscribeToFirestore();
                 });
             } catch (error) {
                 console.error("Firebase init failed, fallback to memory:", error);
@@ -650,7 +645,15 @@
 
             onSnapshot(itemsCollection, (snapshot) => {
                 if (snapshot.empty) {
-                    seedDefaultData();
+                    if (currentUser && currentUser.uid === ADMIN_UID) {
+                        seedDefaultData().catch((error) => {
+                            console.error("Default menu seeding failed:", error);
+                            showToast("تعذر إضافة أصناف المنيو الافتراضية");
+                        });
+                    } else {
+                        menuItems = [...defaultInitialItems];
+                        renderMenu();
+                    }
                     return;
                 }
                 menuItems = [];
@@ -667,17 +670,6 @@
                 showToast("خطأ في جلب البيانات المباشرة");
             });
 
-            // Listen to Admin PIN Settings Document
-            const settingsDoc = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'adminSettings');
-            onSnapshot(settingsDoc, (docSnap) => {
-                if (docSnap.exists() && docSnap.data().pin) {
-                    adminPin = String(docSnap.data().pin);
-                } else {
-                    adminPin = "1234";
-                }
-            }, (error) => {
-                console.error("Error fetching PIN settings:", error);
-            });
         }
 
         // Seed initial menu data if empty
@@ -941,53 +933,61 @@
         // ADMIN DASHBOARD & FIRESTORE CRUD OPERATIONS
         // -----------------------------------------------------------------
         window.openAdminAuth = function() {
-            if (isAdminLoggedIn) {
+            if (isAdminLoggedIn && currentUser && currentUser.uid === ADMIN_UID) {
                 openModal('adminPanelModal');
                 renderAdminMenu();
             } else {
-                document.getElementById('pinInput').value = '';
-                document.getElementById('pinError').classList.add('hidden');
+                document.getElementById('adminEmailInput').value = '';
+                document.getElementById('adminPasswordInput').value = '';
+                document.getElementById('adminLoginError').classList.add('hidden');
                 openModal('adminAuthModal');
             }
         };
 
-        window.handleAdminLogin = function(e) {
+        window.handleAdminLogin = async function(e) {
             e.preventDefault();
-            const pin = document.getElementById('pinInput').value.trim();
-            if (pin === adminPin) {
+            const email = document.getElementById('adminEmailInput').value.trim();
+            const password = document.getElementById('adminPasswordInput').value;
+            const errorEl = document.getElementById('adminLoginError');
+            errorEl.classList.add('hidden');
+            try {
+                const credential = await signInWithEmailAndPassword(auth, email, password);
+                if (credential.user.uid !== ADMIN_UID) {
+                    await signOut(auth);
+                    throw new Error("هذا الحساب غير مصرح له بإدارة المنيو.");
+                }
                 isAdminLoggedIn = true;
                 closeModal('adminAuthModal');
                 document.getElementById('adminBtnText').textContent = 'لوحة التحكم (نشط)';
                 openModal('adminPanelModal');
                 renderAdminMenu();
-                showToast('تم تسجيل الدخول للوحة التحكم بنجاح');
-            } else {
-                document.getElementById('pinError').classList.remove('hidden');
+                showToast('تم تسجيل دخول المسؤول بنجاح');
+            } catch (err) {
+                console.error("Admin login error:", err);
+                errorEl.textContent = err.code === 'auth/invalid-credential'
+                    ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
+                    : (err.message || 'تعذر تسجيل الدخول. حاول مرة أخرى.');
+                errorEl.classList.remove('hidden');
             }
         };
 
-        window.handleForgotPin = function() {
-            document.getElementById('confirmTitle').textContent = 'إعادة تعيين الرقم السري';
-            document.getElementById('confirmMessage').textContent = 'هل تريد إعادة تعيين الرقم السري للوحة التحكم للرقم الافتراضي (1234)؟';
-
-            const btn = document.getElementById('confirmActionButton');
-            btn.onclick = async function() {
-                try {
-                    if (currentUser) {
-                        const settingsDoc = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'adminSettings');
-                        await setDoc(settingsDoc, { pin: '1234' }, { merge: true });
-                    }
-                    adminPin = '1234';
-                    closeModal('confirmModal');
-                    closeModal('adminAuthModal');
-                    showToast('تمت إعادة تعيين الرقم السري إلى 1234');
-                } catch (err) {
-                    console.error("Reset PIN error:", err);
-                    showToast("خطأ أثناء إعادة تعيين الرقم السري");
-                }
-            };
-
-            openModal('confirmModal');
+        window.handleForgotPin = async function() {
+            const email = document.getElementById('adminEmailInput').value.trim();
+            const errorEl = document.getElementById('adminLoginError');
+            errorEl.classList.add('hidden');
+            if (!email) {
+                errorEl.textContent = 'اكتب البريد الإلكتروني أولاً لإرسال رابط إعادة التعيين';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showToast('تم إرسال رابط إعادة تعيين كلمة المرور إذا كان البريد مسجلاً');
+            } catch (err) {
+                console.error("Password reset request failed:", err);
+                errorEl.textContent = 'تعذر إرسال رابط إعادة التعيين. تأكد من البريد وحاول لاحقاً.';
+                errorEl.classList.remove('hidden');
+            }
         };
 
         window.openChangePinModal = function() {
