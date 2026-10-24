@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منيو ولوحة تحكم مطعم قصر الشام الرقمي</title>
+    
+    <!-- Google Fonts: Tajawal -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            orange: '#f97316',
+                            gold: '#f59e0b',
+                            dark: '#0c0c0e',
+                            card: '#18181b',
+                            accent: '#27272a',
+                            border: '#3f3f46'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- QRCode JS Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #0c0c0e;
+            color: #f4f4f5;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #18181b; }
+        ::-webkit-scrollbar-thumb { background: #f97316; border-radius: 4px; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .glass-panel {
+            background: rgba(24, 24, 27, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+        
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-gradient-bg {
+            background: linear-gradient(135deg, #ea580c 0%, #f59e0b 100%);
+        }
+
+        .pattern-bg {
+            background-image: radial-gradient(rgba(249, 115, 22, 0.08) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        .menu-card {
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .menu-card:active { transform: scale(0.98); }
+
+        /* Custom Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 1.5rem;
+            border-color: #10b981;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #10b981;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-28 pattern-bg selection:bg-orange-500 selection:text-white">
+
+    <!-- ANNOUNCEMENT BAR -->
+    <div class="bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 text-white text-xs font-bold py-1.5 px-4 text-center shadow-md flex items-center justify-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+        <span>أهلاً بكم في مطعم قصر الشام - المنيو الإلكتروني التفاعلي المباشر</span>
+    </div>
+
+    <!-- MAIN HEADER -->
+    <header class="relative bg-zinc-900/90 border-b border-zinc-800 pt-6 pb-6 px-4 overflow-hidden">
+        <div class="absolute -top-12 -right-12 w-40 h-40 bg-orange-600/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-3xl mx-auto text-center relative z-10">
+            <!-- Logo Icon -->
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-zinc-800 to-zinc-900 border-2 border-orange-500/40 shadow-xl shadow-orange-500/10 mb-3 relative group">
+                <i class="fa-solid fa-utensils text-3xl text-orange-500"></i>
+                <span class="absolute -bottom-1 -right-1 bg-orange-500 text-zinc-950 text-[10px] font-black px-1.5 py-0.5 rounded-full shadow">شامي</span>
+            </div>
+
+            <!-- Title & Subtitle -->
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-1">
+                مطعم <span class="gold-gradient-text">قصر الشام</span>
+            </h1>
+            <p class="text-zinc-400 text-xs sm:text-sm font-medium mb-4">أشهى المأكولات الشامية والشاورما الأصيلة</p>
+
+            <!-- Status Indicator -->
+            <div class="flex flex-wrap items-center justify-center gap-2 text-xs mb-5">
+                <span id="syncBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    متصل بالسيرفر السحابي
+                </span>
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">
+                    <i class="fa-solid fa-clock text-orange-400 text-[11px]"></i>
+                    خدمة صالة وتك أواي
+                </span>
+            </div>
+
+            <!-- Header Quick Action Buttons -->
+            <div class="flex items-center justify-center gap-2 max-w-sm mx-auto">
+                <button onclick="openModal('qrModal')" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-amber-400 font-bold py-2.5 px-2.5 rounded-xl border border-amber-500/30 text-xs flex items-center justify-center gap-1.5 transition">
+                    <i class="fa-solid fa-qrcode text-sm"></i>
+                    <span>الباركود</span>
+                </button>
+                <button onclick="openAdminAuth()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 text-orange-400 font-bold py-2.5 px-2.5 rounded-xl border border-orange-500/30 text-xs flex items-center justify-center gap-1.5 transition">
+                    <i class="fa-solid fa-user-shield text-sm"></i>
+                    <span id="adminBtnText">لوحة التحكم</span>
+                </button>
+                <button onclick="openModal('contactModal')" class="flex-1 bg-orange-600 hover:bg-orange-500 text-white font-bold py-2.5 px-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-orange-600/20 transition">
+                    <i class="fa-solid fa-phone text-sm"></i>
+                    <span>التواصل</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- STICKY SEARCH & CATEGORY BAR -->
+    <div class="sticky top-0 z-30 glass-panel border-b border-zinc-800 shadow-xl">
+        <div class="max-w-3xl mx-auto px-4 py-3 space-y-3">
+            
+            <!-- Search Bar -->
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 text-sm"></i>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="ابحث عن وجبة أو ساندوتش..." 
+                       class="w-full bg-zinc-900/90 text-white placeholder-zinc-500 text-sm rounded-xl pr-10 pl-10 py-2.5 border border-zinc-700/70 focus:outline-none focus:border-orange-500 transition">
+                <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs bg-zinc-800 w-5 h-5 rounded-full items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Categories Horizontal Scroll -->
+            <div class="flex items-center gap-2 overflow-x-auto hide-scrollbar py-0.5" id="categoryContainer">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN MENU CONTENT -->
+    <main class="max-w-3xl mx-auto px-4 pt-6">
+        
+        <!-- Search Results Banner -->
+        <div id="searchHeading" class="hidden mb-4 flex items-center justify-between">
+            <h2 class="text-sm font-bold text-zinc-400">نتائج البحث عن: <span id="searchTerm" class="text-orange-400"></span></h2>
+            <span id="searchCount" class="text-xs bg-zinc-800 text-zinc-300 px-2.5 py-0.5 rounded-full"></span>
+        </div>
+
+        <!-- Dynamic Menu Sections -->
+        <div id="menuSections" class="space-y-8">
+            <!-- Sections rendered via JS -->
+        </div>
+
+        <!-- Empty Results -->
+        <div id="noResults" class="hidden text-center py-16 px-4">
+            <div class="w-16 h-16 bg-zinc-800/80 rounded-full flex items-center justify-center mx-auto mb-3 text-zinc-500 text-2xl">
+                <i class="fa-solid fa-bowl-rice"></i>
+            </div>
+            <h3 class="text-base font-bold text-zinc-300 mb-1">لم نجد أي وجبات تطابق بحثك</h3>
+            <p class="text-xs text-zinc-500 mb-4">جرب البحث بكلمات أخرى مثل "شاورما" أو "فتة" أو "كرسبي"</p>
+            <button onclick="clearSearch()" class="bg-orange-600/20 text-orange-400 border border-orange-500/30 text-xs font-bold px-4 py-2 rounded-xl">
+                إعادة عرض المنيو كامل
+            </button>
+        </div>
+
+    </main>
+
+    <!-- FLOATING ORDER CALCULATOR TRAY BAR -->
+    <div id="orderTrayBar" class="fixed bottom-4 left-4 right-4 max-w-xl mx-auto z-40 transition-all transform translate-y-32 opacity-0">
+        <div class="glass-panel bg-zinc-900/95 border border-orange-500/40 rounded-2xl p-3 shadow-2xl shadow-orange-950/50 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="relative bg-orange-500 text-zinc-950 w-11 h-11 rounded-xl flex items-center justify-center font-black text-lg shadow-md">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span id="trayBadgeCount" class="absolute -top-1.5 -right-1.5 bg-amber-400 text-zinc-950 text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-zinc-900 shadow">0</span>
+                </div>
+                <div>
+                    <div class="text-[11px] text-zinc-400 font-medium">قائمة اختيارك المقترحة:</div>
+                    <div class="text-base font-extrabold text-white"><span id="trayTotalPrice">0</span> <span class="text-xs text-orange-400">ج.م</span></div>
+                </div>
+            </div>
+            <button onclick="openModal('orderModal')" class="gold-gradient-bg text-zinc-950 hover:brightness-110 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-orange-500/20 transition">
+                <span>عرض كشف الطلب</span>
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 1: ORDER CALCULATOR DRAWER -->
+    <div id="orderModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 w-full max-w-lg sm:rounded-2xl rounded-t-2xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden translate-y-full sm:translate-y-0 transition-transform duration-300" id="orderModalCard">
+            <div class="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-orange-500 text-lg"></i>
+                    <h3 class="font-bold text-white text-base">حاسبة الطلب المباشر</h3>
+                </div>
+                <button onclick="closeModal('orderModal')" class="text-zinc-400 hover:text-white w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div id="orderItemsList" class="p-4 overflow-y-auto space-y-3 flex-1"></div>
+
+            <div class="p-4 border-t border-zinc-800 bg-zinc-950 space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-zinc-400 font-medium">الإجمالي التقديري:</span>
+                    <span class="text-xl font-extrabold text-amber-400"><span id="modalTotalPrice">0</span> ج.م</span>
+                </div>
+                <p class="text-[11px] text-zinc-500 text-center">يمكنك إظهار هذه الشاشة لموظف الصالة (الويتر) لإدخال طلبك بسرعة!</p>
+                <div class="flex gap-2">
+                    <button onclick="clearOrderTray()" class="w-1/3 bg-zinc-800 hover:bg-zinc-700 text-red-400 border border-red-500/20 text-xs font-bold py-2.5 rounded-xl transition">
+                        تفريغ الكشف
+                    </button>
+                    <button onclick="closeModal('orderModal')" class="w-2/3 bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold py-2.5 rounded-xl transition">
+                        العودة للمنيو
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ADMIN AUTH (PIN LOGIN) -->
+    <div id="adminAuthModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 text-center shadow-2xl relative">
+            <button onclick="closeModal('adminAuthModal')" class="absolute top-3 left-3 text-zinc-400 hover:text-white w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-12 h-12 rounded-full bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="font-bold text-white text-lg mb-1">دخول لوحة التحكم</h3>
+            <p class="text-xs text-zinc-400 mb-4">أدخل الرقم السري لإدارة أصناف وأسعار المنيو</p>
+
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <input type="password" id="pinInput" maxlength="6" placeholder="الرقم السري (الافتراضي: 1234)"
+                           class="w-full text-center tracking-widest text-lg font-bold bg-zinc-950 text-white placeholder-zinc-600 rounded-xl px-4 py-3 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                </div>
+                <p id="pinError" class="text-xs text-red-400 hidden">الرقم السري غير صحيح!</p>
+                <button type="submit" class="w-full gold-gradient-bg text-zinc-950 font-bold py-2.5 rounded-xl text-sm shadow-md transition">
+                    تسجيل الدخول
+                </button>
+                <div class="pt-1">
+                    <button type="button" onclick="handleForgotPin()" class="text-xs text-amber-400/90 hover:text-amber-300 hover:underline">
+                        نسيت الرقم السري؟ (إعادة تعيين للرقم الافتراضي 1234)
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADMIN DASHBOARD PANEL -->
+    <div id="adminPanelModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-3xl h-[92vh] flex flex-col shadow-2xl overflow-hidden relative">
+            
+            <!-- Panel Header -->
+            <div class="p-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-950">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+                    <h3 class="font-bold text-white text-base">لوحة تحكم إدارة المطعم السحابية</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="logoutAdmin()" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-3 py-1.5 rounded-lg border border-zinc-700 transition">
+                        <i class="fa-solid fa-right-from-bracket ml-1"></i> خروج
+                    </button>
+                    <button onclick="closeModal('adminPanelModal')" class="text-zinc-400 hover:text-white w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Action Toolbar -->
+            <div class="p-3 bg-zinc-900 border-b border-zinc-800 flex flex-wrap items-center justify-between gap-2">
+                <button onclick="openAddItemModal()" class="bg-orange-600 hover:bg-orange-500 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow-md transition">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>إضافة صنف جديد</span>
+                </button>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="openChangePinModal()" class="bg-zinc-800 hover:bg-zinc-700 text-amber-400 border border-amber-500/20 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-key"></i>
+                        <span>تغيير الرقم السري</span>
+                    </button>
+                    <button onclick="confirmResetData()" class="bg-zinc-800 hover:bg-red-950/40 text-red-400 hover:text-red-300 border border-red-500/20 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>إعادة للبيانات الافتراضية</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search inside admin -->
+            <div class="px-4 pt-3 pb-1">
+                <input type="text" id="adminSearchInput" oninput="renderAdminMenu()" placeholder="تصفية أصناف اللوحة..." 
+                       class="w-full bg-zinc-950 text-white placeholder-zinc-500 text-xs rounded-xl px-3 py-2 border border-zinc-800 focus:outline-none focus:border-orange-500">
+            </div>
+
+            <!-- Admin Items List -->
+            <div id="adminItemsList" class="p-4 overflow-y-auto space-y-2.5 flex-1">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: ADD/EDIT ITEM FORM -->
+    <div id="itemFormModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-md p-5 shadow-2xl relative">
+            <button onclick="closeModal('itemFormModal')" class="absolute top-3 left-3 text-zinc-400 hover:text-white w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <h3 id="formTitle" class="font-bold text-white text-base mb-4 text-center">إضافة صنف جديد</h3>
+
+            <form onsubmit="saveItemForm(event)" class="space-y-3">
+                <input type="hidden" id="formItemId">
+
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1">اسم الوجبة / الساندوتش:</label>
+                    <input type="text" id="formItemName" required placeholder="مثال: ساندوتش شاورما سوبر"
+                           class="w-full bg-zinc-950 text-white text-xs rounded-xl px-3 py-2.5 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-400 mb-1">القسم:</label>
+                        <select id="formItemCategory" class="w-full bg-zinc-950 text-white text-xs rounded-xl px-3 py-2.5 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                            <option value="sandwiches">الساندوتشات</option>
+                            <option value="shawarma-meals">وجبات الشاورما</option>
+                            <option value="fatteh">الفتات</option>
+                            <option value="grill">فراخ شواية</option>
+                            <option value="crispy">وجبات الكرسبي</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-400 mb-1">السعر (ج.م):</label>
+                        <input type="number" id="formItemPrice" required min="1" placeholder="مثال: 95"
+                               class="w-full bg-zinc-950 text-white text-xs rounded-xl px-3 py-2.5 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1">الوصف / المكونات:</label>
+                    <textarea id="formItemDesc" rows="2" placeholder="وصف المكونات ومحتويات الوجبة..."
+                              class="w-full bg-zinc-950 text-white text-xs rounded-xl px-3 py-2 border border-zinc-700 focus:outline-none focus:border-orange-500"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1">الشارة المميزة (اختياري):</label>
+                    <input type="text" id="formItemBadge" placeholder="مثال: الأكثر طلباً، عائلي، جديد"
+                           class="w-full bg-zinc-950 text-white text-xs rounded-xl px-3 py-2 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                </div>
+
+                <div class="flex items-center justify-between bg-zinc-950 p-2.5 rounded-xl border border-zinc-800">
+                    <span class="text-xs font-bold text-zinc-300">حالة الصنف المبدئية:</span>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="formItemAvailable" checked class="w-4 h-4 accent-emerald-500 rounded">
+                        <span class="text-xs text-emerald-400 font-bold">متوفر للطلب</span>
+                    </label>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('itemFormModal')" class="w-1/3 bg-zinc-800 text-zinc-300 text-xs font-bold py-2.5 rounded-xl">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="w-2/3 gold-gradient-bg text-zinc-950 text-xs font-bold py-2.5 rounded-xl shadow-md">
+                        حفظ البيانات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: QR CODE & PRINT -->
+    <div id="qrModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-5 text-center shadow-2xl relative">
+            <button onclick="closeModal('qrModal')" class="absolute top-3 left-3 text-zinc-400 hover:text-white w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-12 h-12 rounded-full bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-qrcode"></i>
+            </div>
+            <h3 class="font-bold text-white text-lg mb-1">رمز الباركود للمنيو</h3>
+            <p class="text-xs text-zinc-400 mb-4">امسح الكود بكاميرا الموبايل لتصفح المنيو مباشرة</p>
+
+            <div class="bg-white p-4 rounded-xl inline-block shadow-inner mb-4 border-4 border-amber-500/30">
+                <div id="qrcodeCanvas"></div>
+            </div>
+
+            <p class="text-xs font-bold text-amber-400 mb-4">مطعم قصر الشام - Qasr El Sham</p>
+
+            <div class="space-y-2">
+                <button onclick="window.print()" class="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <i class="fa-solid fa-print"></i>
+                    <span>طباعة حامل الباركود</span>
+                </button>
+                <button onclick="copyMenuLink()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 transition border border-zinc-700">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>نسخ رابط المنيو</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: CONFIRMATION DIALOG -->
+    <div id="confirmModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-5 text-center shadow-2xl relative">
+            <div class="w-12 h-12 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 id="confirmTitle" class="font-bold text-white text-base mb-1">تأكيد الإجراء</h3>
+            <p id="confirmMessage" class="text-xs text-zinc-400 mb-5"></p>
+
+            <div class="flex gap-2">
+                <button onclick="closeModal('confirmModal')" class="w-1/2 bg-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl text-xs">
+                    إلغاء
+                </button>
+                <button id="confirmActionButton" class="w-1/2 bg-red-600 hover:bg-red-500 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                    نعم، نفّذ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 7: CONTACT -->
+    <div id="contactModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-5 text-center shadow-2xl relative">
+            <button onclick="closeModal('contactModal')" class="absolute top-3 left-3 text-zinc-400 hover:text-white w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-12 h-12 rounded-full bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-headset"></i>
+            </div>
+            <h3 class="font-bold text-white text-lg mb-1">التواصل والطلبات</h3>
+            <p class="text-xs text-zinc-400 mb-5">يسعدنا خدمتكم واستقبال استفساراتكم</p>
+
+            <div class="space-y-3 text-right">
+                <a href="tel:01000000000" class="flex items-center gap-3 p-3 bg-zinc-800/80 rounded-xl border border-zinc-700/60 hover:border-orange-500/50 transition">
+                    <div class="w-9 h-9 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-phone"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-zinc-400">الاتصال المباشر:</div>
+                        <div class="text-sm font-bold text-white dir-ltr text-right">01000000000</div>
+                    </div>
+                </a>
+
+                <div class="flex items-center gap-3 p-3 bg-zinc-800/80 rounded-xl border border-zinc-700/60">
+                    <div class="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-zinc-400">عنوان المطعم:</div>
+                        <div class="text-xs font-bold text-zinc-200">فرع المطعم الرئيسي</div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeModal('contactModal')" class="w-full mt-5 bg-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl text-xs transition">
+                إغلاق
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 8: CHANGE PIN MODAL -->
+    <div id="changePinModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-6 text-center shadow-2xl relative">
+            <button onclick="closeModal('changePinModal')" class="absolute top-3 left-3 text-zinc-400 hover:text-white w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            <h3 class="font-bold text-white text-lg mb-1">تغيير الرقم السري</h3>
+            <p class="text-xs text-zinc-400 mb-4">أدخل الرقم السري الحالي ثم الرقم الجديد</p>
+
+            <form onsubmit="handleChangePin(event)" class="space-y-3 text-right">
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1">الرقم السري الحالي:</label>
+                    <input type="password" id="currentPinInput" required maxlength="6" placeholder="****"
+                           class="w-full text-center tracking-widest text-base font-bold bg-zinc-950 text-white rounded-xl px-3 py-2.5 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1">الرقم السري الجديد:</label>
+                    <input type="password" id="newPinInput" required maxlength="6" placeholder="****"
+                           class="w-full text-center tracking-widest text-base font-bold bg-zinc-950 text-white rounded-xl px-3 py-2.5 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-zinc-400 mb-1">تأكيد الرقم السري الجديد:</label>
+                    <input type="password" id="confirmNewPinInput" required maxlength="6" placeholder="****"
+                           class="w-full text-center tracking-widest text-base font-bold bg-zinc-950 text-white rounded-xl px-3 py-2.5 border border-zinc-700 focus:outline-none focus:border-orange-500">
+                </div>
+                <p id="changePinError" class="text-xs text-red-400 hidden text-center"></p>
+                
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeModal('changePinModal')" class="w-1/3 bg-zinc-800 text-zinc-300 font-bold py-2.5 rounded-xl text-xs">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="w-2/3 gold-gradient-bg text-zinc-950 font-bold py-2.5 rounded-xl text-xs shadow-md transition">
+                        حفظ الرقم السري
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-orange-600 text-white text-xs font-bold px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2 pointer-events-none transition-all duration-300 transform -translate-y-12 opacity-0">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMessage">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- FIREBASE MODULE & APPLICATION CODE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Variables & Configuration
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'qasr-el-sham-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined'
+            ? JSON.parse(__firebase_config)
+            : {
+                apiKey: "AIzaSyDemoKeyFallbackConfigOnly",
+                authDomain: "demo.firebaseapp.com",
+                projectId: "demo-project",
+                storageBucket: "demo.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456789:web:demo"
+            };
+
+        // App State
+        let app, db, auth, currentUser = null;
+        let menuItems = [];
+        let activeCategory = 'all';
+        let searchQuery = '';
+        let orderTray = [];
+        let isAdminLoggedIn = false;
+        let adminPin = "1234";
+
+        // Categories Configuration
+        const menuCategories = [
+            { id: 'all', name: 'الكل', icon: 'fa-border-all' },
+            { id: 'sandwiches', name: 'الساندوتشات', icon: 'fa-bread-slice' },
+            { id: 'shawarma-meals', name: 'وجبات الشاورما', icon: 'fa-box-tissue' },
+            { id: 'fatteh', name: 'الفتات', icon: 'fa-bowl-rice' },
+            { id: 'grill', name: 'فراخ شواية', icon: 'fa-drumstick-bite' },
+            { id: 'crispy', name: 'وجبات الكرسبي', icon: 'fa-cookie-bite' }
+        ];
+
+        // Default Initial Data Seeds
+        const defaultInitialItems = [
+            { id: 's1', categoryId: 'sandwiches', name: 'ساندوتش شاورما فراخ', desc: 'شاورما فراخ ممتازة مع الثومية والمخلل بخبز الصاج', price: 84, badge: 'الأكثر طلباً', available: true },
+            { id: 's2', categoryId: 'sandwiches', name: 'ساندوتش شاورما فراخ بطاطس', desc: 'شاورما فراخ مع بطاطس مقرمشة وصوص الثومية المميز', price: 88, badge: '', available: true },
+            { id: 's3', categoryId: 'sandwiches', name: 'ساندوتش شاورما فراخ بالموزاريلا', desc: 'شاورما فراخ غنية بجبنة الموزاريلا الذائبة والمحمصة', price: 94, badge: 'مميز', available: true },
+            { id: 's4', categoryId: 'sandwiches', name: 'ساندوتش كرسبي', desc: 'صدور دجاج كرسبي مقرمشة مع الخس والصوص الخاطف', price: 94, badge: '', available: true },
+            { id: 's5', categoryId: 'sandwiches', name: 'ساندوتش بطاطس', desc: 'بطاطس مقلية ذهبية مع الثومية والمخلل بخبز الصاج', price: 54, badge: '', available: true },
+            { id: 's6', categoryId: 'sandwiches', name: 'ساندوتش بطاطس بالموزاريلا', desc: 'بطاطس مقلية مع جبنة موزاريلا سايحة ومحمصة', price: 60, badge: '', available: true },
+
+            { id: 'm1', categoryId: 'shawarma-meals', name: 'وجبة عربي فراخ', desc: 'ساندوتش شاورما مقطع + بطاطس مقلية + ثومية + مخلل شامى', price: 128, badge: 'وجبة شعبية', available: true },
+            { id: 'm2', categoryId: 'shawarma-meals', name: 'وجبة عربي فراخ دبل', desc: 'عدد 2 ساندوتش شاورما مقطع + بطاطس + ثومية + مخلل', price: 190, badge: 'مشبعة جداً', available: true },
+            { id: 'm3', categoryId: 'shawarma-meals', name: 'وجبة مكس شاورما وكرسبي', desc: 'ساندوتش شاورما مقطع + صدور فراخ كرسبي + بطاطس + ثومية + مخلل', price: 190, badge: 'توفير مكس', available: true },
+            { id: 'm4', categoryId: 'shawarma-meals', name: 'بوكس الشاورما', desc: 'ساندوتشات شاورما مقطعة + بطاطس عائلية + عيش محمص + صوصات متنوعة', price: 390, badge: 'عائلي', available: true },
+            { id: 'm5', categoryId: 'shawarma-meals', name: 'بوكس الشاورما والكرسبي', desc: 'ساندوتشات شاورما مقطعة + صدور فراخ كرسبي + بطاطس + عيش محمص + صوصات', price: 430, badge: 'ملكي', available: true },
+
+            { id: 'f1', categoryId: 'fatteh', name: 'فتة شاورما فراخ (وسط)', desc: 'أرز بسمتي مبهر + شاورما فراخ + ثومية غنية + عيش صاج محمص', price: 115, badge: 'الأعلى تقييماً', available: true },
+            { id: 'f2', categoryId: 'fatteh', name: 'فتة شاورما فراخ (كبير)', desc: 'أرز بسمتي مبهر + شاورما فراخ مضاعفة + ثومية + عيش محمص', price: 135, badge: '', available: true },
+            { id: 'f3', categoryId: 'fatteh', name: 'فتة كرسبي (وسط)', desc: 'أرز بسمتي مبهر + قطع دجاج كرسبي مقرمشة + ثومية + عيش محمص', price: 115, badge: '', available: true },
+
+            { id: 'g1', categoryId: 'grill', name: 'فرخة مشوية كاملة', desc: 'تقدم مع: أرز بسمتي + بطاطس + ثومية + مخلل + خبز صاج', price: 360, badge: 'عائلي', available: true },
+            { id: 'g2', categoryId: 'grill', name: 'نصف فرخة مشوية', desc: 'تقدم مع: أرز بسمتي + بطاطس + ثومية + مخلل + خبز صاج', price: 198, badge: '', available: true },
+            { id: 'g3', categoryId: 'grill', name: 'ربع فرخة مشوية صدر', desc: 'تقدم مع: أرز بسمتي + بطاطس + ثومية + مخلل + خبز صاج', price: 134, badge: '', available: true },
+            { id: 'g4', categoryId: 'grill', name: 'ربع فرخة مشوية ورك', desc: 'تقدم مع: أرز بسمتي + بطاطس + ثومية + مخلل + خبز صاج', price: 124, badge: '', available: true },
+            { id: 'g5', categoryId: 'grill', name: 'فرخة مشوية سادة', desc: 'فرخة مشوية على الشواية الشامية بدون إضافات أرز', price: 328, badge: '', available: true },
+
+            { id: 'c1', categoryId: 'crispy', name: 'وجبة كرسبي وسط', desc: 'قطع كرسبي + أرز بسمتي + بطاطس + ثومية + كول سلو + خبز صاج', price: 155, badge: '', available: true },
+            { id: 'c2', categoryId: 'crispy', name: 'وجبة كرسبي كبيرة', desc: 'قطع كرسبي عائلية + أرز بسمتي + بطاطس + ثومية + كول سلو + خبز صاج', price: 199, badge: 'مفضلة للشباب', available: true }
+        ];
+
+        // -----------------------------------------------------------------
+        // FIREBASE & APP INITIALIZATION
+        // -----------------------------------------------------------------
+        async function initApp() {
+            try {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // Authentication Setup
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    if (user) {
+                        subscribeToFirestore();
+                    }
+                });
+            } catch (error) {
+                console.error("Firebase init failed, fallback to memory:", error);
+                document.getElementById('syncBadge').innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> وضع الذاكرة المحلية`;
+                menuItems = [...defaultInitialItems];
+                renderMenu();
+            }
+
+            renderCategoryTabs();
+            initQRCode();
+        }
+
+        // Firestore Realtime Listener
+        function subscribeToFirestore() {
+            if (!currentUser) return;
+            const itemsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'menuItems');
+
+            onSnapshot(itemsCollection, (snapshot) => {
+                if (snapshot.empty) {
+                    seedDefaultData();
+                    return;
+                }
+                menuItems = [];
+                snapshot.forEach((docSnap) => {
+                    menuItems.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                renderMenu();
+                if (isAdminLoggedIn) {
+                    renderAdminMenu();
+                }
+            }, (error) => {
+                console.error("Firestore subscription error:", error);
+                showToast("خطأ في جلب البيانات المباشرة");
+            });
+
+            // Listen to Admin PIN Settings Document
+            const settingsDoc = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'adminSettings');
+            onSnapshot(settingsDoc, (docSnap) => {
+                if (docSnap.exists() && docSnap.data().pin) {
+                    adminPin = String(docSnap.data().pin);
+                } else {
+                    adminPin = "1234";
+                }
+            }, (error) => {
+                console.error("Error fetching PIN settings:", error);
+            });
+        }
+
+        // Seed initial menu data if empty
+        async function seedDefaultData() {
+            if (!currentUser) return;
+            const itemsCollection = collection(db, 'artifacts', appId, 'public', 'data', 'menuItems');
+            for (const item of defaultInitialItems) {
+                const itemDoc = doc(itemsCollection, item.id);
+                await setDoc(itemDoc, item);
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // CUSTOMER MENU RENDERING LOGIC
+        // -----------------------------------------------------------------
+        function renderCategoryTabs() {
+            const container = document.getElementById('categoryContainer');
+            container.innerHTML = menuCategories.map(cat => {
+                const isActive = cat.id === activeCategory;
+                return `
+                    <button onclick="setCategory('${cat.id}')" 
+                            class="px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 shrink-0 ${
+                                isActive 
+                                ? 'gold-gradient-bg text-zinc-950 shadow-md shadow-orange-600/20 scale-105' 
+                                : 'bg-zinc-900/90 text-zinc-400 border border-zinc-800 hover:border-zinc-700 hover:text-zinc-200'
+                            }">
+                        <i class="fa-solid ${cat.icon} text-xs"></i>
+                        <span>${cat.name}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        window.setCategory = function(catId) {
+            activeCategory = catId;
+            renderCategoryTabs();
+            renderMenu();
+        };
+
+        window.handleSearch = function() {
+            const input = document.getElementById('searchInput');
+            searchQuery = input.value.trim().toLowerCase();
+            const clearBtn = document.getElementById('clearSearchBtn');
+            clearBtn.classList.toggle('hidden', searchQuery.length === 0);
+            clearBtn.classList.toggle('flex', searchQuery.length > 0);
+            renderMenu();
+        };
+
+        window.clearSearch = function() {
+            const input = document.getElementById('searchInput');
+            input.value = '';
+            searchQuery = '';
+            document.getElementById('clearSearchBtn').classList.add('hidden');
+            renderMenu();
+        };
+
+        function renderMenu() {
+            const sectionsContainer = document.getElementById('menuSections');
+            const noResults = document.getElementById('noResults');
+            const searchHeading = document.getElementById('searchHeading');
+
+            sectionsContainer.innerHTML = '';
+
+            let filtered = menuItems.filter(item => {
+                const matchesCategory = (activeCategory === 'all') || (item.categoryId === activeCategory);
+                const matchesSearch = searchQuery === '' || 
+                                      item.name.toLowerCase().includes(searchQuery) || 
+                                      (item.desc && item.desc.toLowerCase().includes(searchQuery));
+                return matchesCategory && matchesSearch;
+            });
+
+            if (searchQuery !== '') {
+                searchHeading.classList.remove('hidden');
+                document.getElementById('searchTerm').textContent = `"${searchQuery}"`;
+                document.getElementById('searchCount').textContent = `${filtered.length} وجبة`;
+            } else {
+                searchHeading.classList.add('hidden');
+            }
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            const categoriesToDisplay = activeCategory === 'all' && searchQuery === '' 
+                ? menuCategories.filter(c => c.id !== 'all')
+                : menuCategories.filter(c => c.id === activeCategory || activeCategory === 'all');
+
+            categoriesToDisplay.forEach(category => {
+                const categoryItems = filtered.filter(item => item.categoryId === category.id);
+                if (categoryItems.length === 0) return;
+
+                const sectionEl = document.createElement('section');
+                sectionEl.className = 'space-y-3';
+
+                sectionEl.innerHTML = `
+                    <div class="flex items-center justify-between border-r-4 border-orange-500 pr-3 py-1 bg-zinc-900/40 rounded-l-xl">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid ${category.icon} text-orange-400 text-sm"></i>
+                            <h2 class="text-base font-extrabold text-white">${category.name}</h2>
+                        </div>
+                        <span class="text-[11px] text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded-full">${categoryItems.length} الأصناف</span>
+                    </div>
+                `;
+
+                if (category.id === 'grill') {
+                    sectionEl.innerHTML += `
+                        <p class="text-[11px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 p-2 rounded-xl flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-info shrink-0"></i>
+                            <span>تقدم الوجبات مع: أرز بسمتي - بطاطس - ثومية - مخلل - خبز صاج (ماعدا السادة)</span>
+                        </p>
+                    `;
+                }
+
+                const gridEl = document.createElement('div');
+                gridEl.className = 'grid grid-cols-1 sm:grid-cols-2 gap-3.5';
+
+                categoryItems.forEach(item => {
+                    gridEl.appendChild(createItemCard(item));
+                });
+
+                sectionEl.appendChild(gridEl);
+                sectionsContainer.appendChild(sectionEl);
+            });
+        }
+
+        function createItemCard(item) {
+            const card = document.createElement('div');
+            const isAvailable = item.available !== false;
+            
+            card.className = `menu-card bg-zinc-900/90 border ${isAvailable ? 'border-zinc-800/90 hover:border-orange-500/40' : 'border-red-900/30 opacity-70'} rounded-2xl p-3.5 flex flex-col justify-between shadow-lg relative overflow-hidden group`;
+
+            card.innerHTML = `
+                <div>
+                    <div class="flex items-start justify-between gap-2 mb-1.5">
+                        <h3 class="text-sm font-extrabold text-white group-hover:text-orange-400 transition-colors">${item.name}</h3>
+                        <div class="flex flex-col items-end gap-1">
+                            ${item.badge ? `
+                                <span class="bg-gradient-to-r from-amber-500 to-orange-500 text-zinc-950 text-[10px] font-black px-2 py-0.5 rounded-full shrink-0 shadow-sm">
+                                    ${item.badge}
+                                </span>
+                            ` : ''}
+                            ${!isAvailable ? `
+                                <span class="bg-red-500/20 text-red-400 border border-red-500/30 text-[9px] font-bold px-1.5 py-0.5 rounded">
+                                    نفذت الكمية
+                                </span>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-zinc-400 leading-relaxed line-clamp-2">${item.desc || ''}</p>
+                </div>
+
+                <div class="mt-3 pt-2.5 border-t border-zinc-800/80 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs text-zinc-500 font-medium">السعر:</span>
+                        <span class="text-base font-extrabold text-amber-400 ml-1">${item.price}</span>
+                        <span class="text-[11px] text-zinc-400">ج.م</span>
+                    </div>
+
+                    ${isAvailable ? `
+                        <button onclick="addToOrderTray('${item.id}')" 
+                                class="bg-zinc-800 hover:bg-orange-600 text-orange-400 hover:text-white border border-orange-500/30 hover:border-orange-600 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                            <span>إضافة للطلب</span>
+                        </button>
+                    ` : `
+                        <span class="text-[11px] text-zinc-500 font-bold bg-zinc-800/60 px-2 py-1 rounded-lg">غير متوفر حالياً</span>
+                    `}
+                </div>
+            `;
+
+            return card;
+        }
+
+        // -----------------------------------------------------------------
+        // ORDER TRAY / CALCULATOR
+        // -----------------------------------------------------------------
+        window.addToOrderTray = function(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (!item || item.available === false) return;
+
+            const existingIndex = orderTray.findIndex(i => i.id === item.id);
+
+            if (existingIndex > -1) {
+                orderTray[existingIndex].qty += 1;
+            } else {
+                orderTray.push({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    qty: 1
+                });
+            }
+
+            updateOrderTrayUI();
+            showToast(`تمت إضافة "${item.name}" للحاسبة`);
+        };
+
+        window.updateOrderTrayQty = function(id, change) {
+            const index = orderTray.findIndex(i => i.id === id);
+            if (index > -1) {
+                orderTray[index].qty += change;
+                if (orderTray[index].qty <= 0) {
+                    orderTray.splice(index, 1);
+                }
+            }
+            updateOrderTrayUI();
+        };
+
+        window.clearOrderTray = function() {
+            orderTray = [];
+            updateOrderTrayUI();
+            closeModal('orderModal');
+            showToast('تم تفريغ كشف الطلبات');
+        };
+
+        function updateOrderTrayUI() {
+            const trayBar = document.getElementById('orderTrayBar');
+            const totalCount = orderTray.reduce((acc, curr) => acc + curr.qty, 0);
+            const totalPrice = orderTray.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
+
+            document.getElementById('trayBadgeCount').textContent = totalCount;
+            document.getElementById('trayTotalPrice').textContent = totalPrice;
+            document.getElementById('modalTotalPrice').textContent = totalPrice;
+
+            trayBar.classList.toggle('translate-y-32', totalCount === 0);
+            trayBar.classList.toggle('opacity-0', totalCount === 0);
+
+            const listContainer = document.getElementById('orderItemsList');
+            if (orderTray.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-8 text-zinc-500 text-xs">
+                        <i class="fa-solid fa-basket-shopping text-3xl mb-2 text-zinc-600 block"></i>
+                        لم تقم بإضافة أي وجبات في الحاسبة بعد
+                    </div>
+                `;
+            } else {
+                listContainer.innerHTML = orderTray.map(item => `
+                    <div class="flex items-center justify-between bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                        <div class="flex-1 pr-1">
+                            <div class="text-xs font-bold text-white">${item.name}</div>
+                            <div class="text-[11px] text-amber-400 font-semibold">${item.price} ج.م × ${item.qty} = ${item.price * item.qty} ج.م</div>
+                        </div>
+                        <div class="flex items-center gap-2 bg-zinc-900 border border-zinc-700/80 rounded-lg p-1">
+                            <button onclick="updateOrderTrayQty('${item.id}', -1)" class="w-6 h-6 rounded bg-zinc-800 hover:bg-red-500/20 text-red-400 flex items-center justify-center text-xs font-bold">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <span class="text-xs font-bold text-white w-5 text-center">${item.qty}</span>
+                            <button onclick="updateOrderTrayQty('${item.id}', 1)" class="w-6 h-6 rounded bg-zinc-800 hover:bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // ADMIN DASHBOARD & FIRESTORE CRUD OPERATIONS
+        // -----------------------------------------------------------------
+        window.openAdminAuth = function() {
+            if (isAdminLoggedIn) {
+                openModal('adminPanelModal');
+                renderAdminMenu();
+            } else {
+                document.getElementById('pinInput').value = '';
+                document.getElementById('pinError').classList.add('hidden');
+                openModal('adminAuthModal');
+            }
+        };
+
+        window.handleAdminLogin = function(e) {
+            e.preventDefault();
+            const pin = document.getElementById('pinInput').value.trim();
+            if (pin === adminPin) {
+                isAdminLoggedIn = true;
+                closeModal('adminAuthModal');
+                document.getElementById('adminBtnText').textContent = 'لوحة التحكم (نشط)';
+                openModal('adminPanelModal');
+                renderAdminMenu();
+                showToast('تم تسجيل الدخول للوحة التحكم بنجاح');
+            } else {
+                document.getElementById('pinError').classList.remove('hidden');
+            }
+        };
+
+        window.handleForgotPin = function() {
+            document.getElementById('confirmTitle').textContent = 'إعادة تعيين الرقم السري';
+            document.getElementById('confirmMessage').textContent = 'هل تريد إعادة تعيين الرقم السري للوحة التحكم للرقم الافتراضي (1234)؟';
+
+            const btn = document.getElementById('confirmActionButton');
+            btn.onclick = async function() {
+                try {
+                    if (currentUser) {
+                        const settingsDoc = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'adminSettings');
+                        await setDoc(settingsDoc, { pin: '1234' }, { merge: true });
+                    }
+                    adminPin = '1234';
+                    closeModal('confirmModal');
+                    closeModal('adminAuthModal');
+                    showToast('تمت إعادة تعيين الرقم السري إلى 1234');
+                } catch (err) {
+                    console.error("Reset PIN error:", err);
+                    showToast("خطأ أثناء إعادة تعيين الرقم السري");
+                }
+            };
+
+            openModal('confirmModal');
+        };
+
+        window.openChangePinModal = function() {
+            document.getElementById('currentPinInput').value = '';
+            document.getElementById('newPinInput').value = '';
+            document.getElementById('confirmNewPinInput').value = '';
+            document.getElementById('changePinError').classList.add('hidden');
+            openModal('changePinModal');
+        };
+
+        window.handleChangePin = async function(e) {
+            e.preventDefault();
+            const current = document.getElementById('currentPinInput').value.trim();
+            const newPin = document.getElementById('newPinInput').value.trim();
+            const confirmPin = document.getElementById('confirmNewPinInput').value.trim();
+            const errorEl = document.getElementById('changePinError');
+
+            if (current !== adminPin) {
+                errorEl.textContent = 'الرقم السري الحالي غير صحيح!';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            if (newPin.length < 4) {
+                errorEl.textContent = 'الرقم السري الجديد يجب أن يتكون من 4 أرقام على الأقل';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                errorEl.textContent = 'الرقم السري الجديد غير متطابق!';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                if (currentUser) {
+                    const settingsDoc = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'adminSettings');
+                    await setDoc(settingsDoc, { pin: newPin }, { merge: true });
+                }
+                adminPin = newPin;
+                closeModal('changePinModal');
+                showToast('تم تغيير وحفظ الرقم السري بنجاح');
+            } catch (err) {
+                console.error("Error saving new PIN:", err);
+                errorEl.textContent = 'حدث خطأ أثناء حفظ الرقم السري';
+                errorEl.classList.remove('hidden');
+            }
+        };
+
+        window.logoutAdmin = function() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminBtnText').textContent = 'لوحة التحكم';
+            closeModal('adminPanelModal');
+            showToast('تم الخروج من لوحة التحكم');
+        };
+
+        window.renderAdminMenu = function() {
+            const container = document.getElementById('adminItemsList');
+            const searchVal = (document.getElementById('adminSearchInput').value || '').toLowerCase();
+
+            let itemsToDisplay = menuItems.filter(item => 
+                item.name.toLowerCase().includes(searchVal) || 
+                (item.desc && item.desc.toLowerCase().includes(searchVal))
+            );
+
+            if (itemsToDisplay.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-zinc-500 text-xs">لا توجد أصناف مطابقة للبحث</div>`;
+                return;
+            }
+
+            container.innerHTML = itemsToDisplay.map(item => {
+                const isAvail = item.available !== false;
+                return `
+                    <div class="bg-zinc-950 p-3 rounded-xl border ${isAvail ? 'border-zinc-800' : 'border-red-900/40'} flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex-1 min-w-[180px]">
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-xs font-bold text-white">${item.name}</h4>
+                                ${item.badge ? `<span class="bg-amber-500/20 text-amber-400 text-[9px] px-1.5 py-0.5 rounded">${item.badge}</span>` : ''}
+                            </div>
+                            <div class="text-[11px] text-zinc-400 mt-0.5">${item.price} ج.م • ${getCategoryName(item.categoryId)}</div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <!-- Availability Toggle -->
+                            <button onclick="toggleItemAvailability('${item.id}', ${!isAvail})" 
+                                    class="px-2.5 py-1 rounded-lg text-[11px] font-bold border transition flex items-center gap-1.5 ${
+                                        isAvail 
+                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20' 
+                                        : 'bg-red-500/10 text-red-400 border-red-500/30 hover:bg-red-500/20'
+                                    }">
+                                <i class="fa-solid ${isAvail ? 'fa-check' : 'fa-ban'}"></i>
+                                <span>${isAvail ? 'متوفر' : 'نفذت'}</span>
+                            </button>
+
+                            <!-- Edit Button -->
+                            <button onclick="openEditItemModal('${item.id}')" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-amber-400 flex items-center justify-center text-xs transition">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+
+                            <!-- Delete Button -->
+                            <button onclick="confirmDeleteItem('${item.id}', '${item.name}')" class="w-8 h-8 rounded-lg bg-zinc-800 hover:bg-red-900/40 text-red-400 flex items-center justify-center text-xs transition">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        };
+
+        function getCategoryName(catId) {
+            const cat = menuCategories.find(c => c.id === catId);
+            return cat ? cat.name : catId;
+        }
+
+        // Toggle item availability in Firestore
+        window.toggleItemAvailability = async function(itemId, newStatus) {
+            try {
+                if (currentUser) {
+                    const itemRef = doc(db, 'artifacts', appId, 'public', 'data', 'menuItems', itemId);
+                    await updateDoc(itemRef, { available: newStatus });
+                } else {
+                    const item = menuItems.find(i => i.id === itemId);
+                    if (item) item.available = newStatus;
+                    renderMenu();
+                    renderAdminMenu();
+                }
+                showToast(newStatus ? 'تم تحويل الصنف إلى متوفر' : 'تم وسم الصنف كـ نفذت الكمية');
+            } catch (err) {
+                console.error("Error toggling item availability:", err);
+                showToast("خطأ في تحديث حالة الصنف");
+            }
+        };
+
+        // Open Add Item Modal
+        window.openAddItemModal = function() {
+            document.getElementById('formTitle').textContent = 'إضافة صنف جديد';
+            document.getElementById('formItemId').value = '';
+            document.getElementById('formItemName').value = '';
+            document.getElementById('formItemCategory').value = 'sandwiches';
+            document.getElementById('formItemPrice').value = '';
+            document.getElementById('formItemDesc').value = '';
+            document.getElementById('formItemBadge').value = '';
+            document.getElementById('formItemAvailable').checked = true;
+
+            openModal('itemFormModal');
+        };
+
+        // Open Edit Item Modal
+        window.openEditItemModal = function(itemId) {
+            const item = menuItems.find(i => i.id === itemId);
+            if (!item) return;
+
+            document.getElementById('formTitle').textContent = 'تعديل بيانات الصنف';
+            document.getElementById('formItemId').value = item.id;
+            document.getElementById('formItemName').value = item.name;
+            document.getElementById('formItemCategory').value = item.categoryId || 'sandwiches';
+            document.getElementById('formItemPrice').value = item.price;
+            document.getElementById('formItemDesc').value = item.desc || '';
+            document.getElementById('formItemBadge').value = item.badge || '';
+            document.getElementById('formItemAvailable').checked = item.available !== false;
+
+            openModal('itemFormModal');
+        };
+
+        // Save Item (Create or Update)
+        window.saveItemForm = async function(e) {
+            e.preventDefault();
+
+            const itemId = document.getElementById('formItemId').value;
+            const itemData = {
+                name: document.getElementById('formItemName').value.trim(),
+                categoryId: document.getElementById('formItemCategory').value,
+                price: Number(document.getElementById('formItemPrice').value),
+                desc: document.getElementById('formItemDesc').value.trim(),
+                badge: document.getElementById('formItemBadge').value.trim(),
+                available: document.getElementById('formItemAvailable').checked
+            };
+
+            try {
+                if (currentUser) {
+                    const itemsCol = collection(db, 'artifacts', appId, 'public', 'data', 'menuItems');
+                    if (itemId) {
+                        // Update existing
+                        const itemDoc = doc(itemsCol, itemId);
+                        await updateDoc(itemDoc, itemData);
+                        showToast('تم تعديل الصنف بنجاح');
+                    } else {
+                        // Add new
+                        const newDocRef = doc(itemsCol);
+                        await setDoc(newDocRef, { id: newDocRef.id, ...itemData });
+                        showToast('تمت إضافة الصنف الجديد بنجاح');
+                    }
+                } else {
+                    if (itemId) {
+                        const idx = menuItems.findIndex(i => i.id === itemId);
+                        if (idx > -1) menuItems[idx] = { ...menuItems[idx], ...itemData };
+                    } else {
+                        menuItems.push({ id: 'custom_' + Date.now(), ...itemData });
+                    }
+                    renderMenu();
+                    renderAdminMenu();
+                    showToast('تم حفظ التغييرات محلياً');
+                }
+
+                closeModal('itemFormModal');
+            } catch (err) {
+                console.error("Error saving item:", err);
+                showToast("خطأ أثناء حفظ البيانات");
+            }
+        };
+
+        // Confirm Delete Item
+        window.confirmDeleteItem = function(itemId, itemName) {
+            document.getElementById('confirmTitle').textContent = 'حذف صنف';
+            document.getElementById('confirmMessage').textContent = `هل أنت أصل متأكد من حذف "${itemName}" نهائياً من المنيو؟`;
+            
+            const btn = document.getElementById('confirmActionButton');
+            btn.onclick = async function() {
+                try {
+                    if (currentUser) {
+                        const itemDoc = doc(db, 'artifacts', appId, 'public', 'data', 'menuItems', itemId);
+                        await deleteDoc(itemDoc);
+                    } else {
+                        menuItems = menuItems.filter(i => i.id !== itemId);
+                        renderMenu();
+                        renderAdminMenu();
+                    }
+                    closeModal('confirmModal');
+                    showToast(`تم حذف "${itemName}" بنجاح`);
+                } catch (err) {
+                    console.error("Error deleting item:", err);
+                    showToast("خطأ أثناء الحذف");
+                }
+            };
+
+            openModal('confirmModal');
+        };
+
+        // Reset Data to Initial Defaults
+        window.confirmResetData = function() {
+            document.getElementById('confirmTitle').textContent = 'استعادة البيانات الافتراضية';
+            document.getElementById('confirmMessage').textContent = 'هل ترغب في استبدال جميع البيانات الحالية بالمنيو الشامي الأصلي؟';
+
+            const btn = document.getElementById('confirmActionButton');
+            btn.onclick = async function() {
+                try {
+                    if (currentUser) {
+                        const itemsCol = collection(db, 'artifacts', appId, 'public', 'data', 'menuItems');
+                        const snap = await getDocs(itemsCol);
+                        const batch = writeBatch(db);
+                        snap.forEach(docSnap => batch.delete(docSnap.ref));
+                        await batch.commit();
+
+                        for (const item of defaultInitialItems) {
+                            const itemDoc = doc(itemsCol, item.id);
+                            await setDoc(itemDoc, item);
+                        }
+                    } else {
+                        menuItems = [...defaultInitialItems];
+                        renderMenu();
+                        renderAdminMenu();
+                    }
+                    closeModal('confirmModal');
+                    showToast('تمت استعادة البيانات الافتراضية بنجاح');
+                } catch (err) {
+                    console.error("Error resetting data:", err);
+                    showToast("خطأ أثناء إعادة الضبط");
+                }
+            };
+
+            openModal('confirmModal');
+        };
+
+        // -----------------------------------------------------------------
+        // QR CODE & HELPER MODALS
+        // -----------------------------------------------------------------
+        function initQRCode() {
+            const qrCanvas = document.getElementById('qrcodeCanvas');
+            qrCanvas.innerHTML = '';
+            
+            new QRCode(qrCanvas, {
+                text: window.location.href,
+                width: 170,
+                height: 170,
+                colorDark : "#0f0f11",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+        window.openModal = function(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            if (id === 'orderModal') {
+                document.getElementById('orderModalCard').classList.remove('translate-y-full');
+            }
+        };
+
+        window.closeModal = function(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            if (id === 'orderModal') {
+                document.getElementById('orderModalCard').classList.add('translate-y-full');
+            }
+        };
+
+        window.copyMenuLink = function() {
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.href;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            showToast('تم نسخ رابط المنيو للذاكرة');
+        };
+
+        window.showToast = function(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('-translate-y-12', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('-translate-y-12', 'opacity-0');
+            }, 2500);
+        };
+
+        // Run Application
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
