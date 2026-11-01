@@ -1293,7 +1293,7 @@
         window.copyMenuLink = function() {
             const dummy = document.createElement('input');
             document.body.appendChild(dummy);
-            dummy.value = window.location.href;
+            dummy.value = window.location.origin + window.location.pathname;
             dummy.select();
             document.execCommand('copy');
             document.body.removeChild(dummy);
