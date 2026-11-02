@@ -91,6 +91,35 @@
         .toggle-checkbox:checked + .toggle-label {
             background-color: #10b981;
         }
+
+        /* New table-stand artwork: screen preview and print-only page */
+        #tableStandPrint { display: none; }
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+            body * { visibility: hidden !important; }
+            #tableStandPrint, #tableStandPrint img {
+                visibility: visible !important;
+            }
+            #tableStandPrint {
+                display: flex !important;
+                position: fixed;
+                inset: 0;
+                width: 100vw;
+                height: 100vh;
+                align-items: center;
+                justify-content: center;
+                background: #fff;
+                overflow: hidden;
+            }
+            #tableStandPrint img {
+                display: block;
+                width: auto;
+                height: 100%;
+                max-width: 100%;
+                object-fit: contain;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen pb-28 pattern-bg selection:bg-orange-500 selection:text-white">
@@ -409,8 +438,8 @@
             <h3 class="font-bold text-white text-lg mb-1">رمز الباركود للمنيو</h3>
             <p class="text-xs text-zinc-400 mb-4">امسح الكود بكاميرا الموبايل لتصفح المنيو مباشرة</p>
 
-            <div class="bg-white p-4 rounded-xl inline-block shadow-inner mb-4 border-4 border-amber-500/30">
-                <div id="qrcodeCanvas"></div>
+            <div class="rounded-xl overflow-hidden mb-4 border-2 border-amber-500/40 bg-zinc-950">
+                <img src="https://drive.google.com/uc?export=view&id=1nUKq4tQ-p4wxF8JFRgBMrxGadpdedQXP" alt="تصميم حامل طاولة قصر الشام" class="w-full h-auto block" loading="eager">
             </div>
 
             <p class="text-xs font-bold text-amber-400 mb-4">مطعم قصر الشام - Qasr El Sham</p>
@@ -1312,5 +1341,11 @@
         // Run Application
         window.addEventListener('DOMContentLoaded', initApp);
     </script>
+
+    <!-- PRINT: replacement table-stand artwork -->
+    <div id="tableStandPrint" aria-hidden="true">
+        <img src="https://drive.google.com/uc?export=view&id=1nUKq4tQ-p4wxF8JFRgBMrxGadpdedQXP" alt="حامل طاولة قصر الشام">
+    </div>
+
 </body>
 </html>
