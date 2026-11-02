@@ -582,7 +582,10 @@
             { id: 'shawarma-meals', name: 'وجبات الشاورما', icon: 'fa-box-tissue' },
             { id: 'fatteh', name: 'الفتات', icon: 'fa-bowl-rice' },
             { id: 'grill', name: 'فراخ شواية', icon: 'fa-drumstick-bite' },
-            { id: 'crispy', name: 'وجبات الكرسبي', icon: 'fa-cookie-bite' }
+            { id: 'crispy', name: 'وجبات الكرسبي', icon: 'fa-cookie-bite' },
+            { id: 'pizza', name: 'البيتزا', icon: 'fa-pizza-slice' },
+            { id: 'pizza-offers', name: 'عروض البيتزا', icon: 'fa-tags' },
+            { id: 'drinks', name: 'المشروبات', icon: 'fa-glass-water' }
         ];
 
         // Default Initial Data Seeds
@@ -610,7 +613,24 @@
             { id: 'g5', categoryId: 'grill', name: 'فرخة مشوية سادة', desc: 'فرخة مشوية على الشواية الشامية بدون إضافات أرز', price: 328, badge: '', available: true },
 
             { id: 'c1', categoryId: 'crispy', name: 'وجبة كرسبي وسط', desc: 'قطع كرسبي + أرز بسمتي + بطاطس + ثومية + كول سلو + خبز صاج', price: 155, badge: '', available: true },
-            { id: 'c2', categoryId: 'crispy', name: 'وجبة كرسبي كبيرة', desc: 'قطع كرسبي عائلية + أرز بسمتي + بطاطس + ثومية + كول سلو + خبز صاج', price: 199, badge: 'مفضلة للشباب', available: true }
+            { id: 'c2', categoryId: 'crispy', name: 'وجبة كرسبي كبيرة', desc: 'قطع كرسبي عائلية + أرز بسمتي + بطاطس + ثومية + كول سلو + خبز صاج', price: 199, badge: 'مفضلة للشباب', available: true },
+
+            { id: 'pizza-margherita', categoryId: 'pizza', name: 'بيتزا مارجرينا', desc: 'صوص البيتزا + جبنة موزاريلا', price: 130, badge: '', available: true },
+            { id: 'pizza-vegetables', categoryId: 'pizza', name: 'بيتزا خضروات', desc: 'صوص البيتزا + جبنة موزاريلا + فلفل أخضر + فلفل ألوان + زيتون أسود + طماطم + مشروم', price: 140, badge: '', available: true },
+            { id: 'pizza-mix-cheese', categoryId: 'pizza', name: 'بيتزا ميكس جبن', desc: 'صوص البيتزا + ميكس جبن', price: 150, badge: '', available: true },
+            { id: 'pizza-milano-chicken', categoryId: 'pizza', name: 'بيتزا ميلانو فراخ', desc: 'صوص البيتزا + جبنة موزاريلا + قطع الفراخ المتبلة + فلفل أخضر + زيتون أسود + طماطم', price: 160, badge: '', available: true },
+            { id: 'pizza-chicken-shawarma', categoryId: 'pizza', name: 'بيتزا شاورما فراخ', desc: 'صوص البيتزا + جبنة موزاريلا + شاورما فراخ', price: 168, badge: '', available: true },
+            { id: 'pizza-bbq-chicken', categoryId: 'pizza', name: 'بيتزا باربكيو فراخ', desc: 'صوص الباربكيو + جبنة موزاريلا + قطع الفراخ المتبلة + فلفل أخضر + بصل', price: 164, badge: '', available: true },
+            { id: 'pizza-chicken-ranch', categoryId: 'pizza', name: 'بيتزا تشيكن رانش', desc: 'صوص الرانش + جبنة موزاريلا + قطع الفراخ المتبلة + فلفل ألوان + هالبينو + طماطم', price: 174, badge: '', available: true },
+            { id: 'pizza-hot-dog', categoryId: 'pizza', name: 'بيتزا هوت دوج', desc: 'صوص البيتزا + جبنة موزاريلا + هوت دوج + فلفل أخضر + زيتون أسود', price: 164, badge: '', available: true },
+            { id: 'pizza-super-shrimp', categoryId: 'pizza', name: 'بيتزا سوبر جمبري', desc: 'صوص البيتزا + جبنة موزاريلا + لحمة مفرومة + هوت دوج + مشروم + فلفل ألوان + زيتون أسود + طماطم + بصل', price: 180, badge: '', available: true },
+            { id: 'pizza-mix-meat-chicken', categoryId: 'pizza', name: 'بيتزا ميكس لحمة وفراخ', desc: 'صوص البيتزا + جبنة موزاريلا + لحمة مفرومة + قطع الفراخ المتبلة + فلفل ألوان + زيتون أسود + طماطم', price: 180, badge: '', available: true },
+
+            { id: 'pizza-offer-2', categoryId: 'pizza-offers', name: 'عرض أي 2 بيتزا', desc: 'اختار أي 2 بيتزا من الأصناف المتاحة', price: 308, badge: 'عرض مميز', available: true },
+            { id: 'pizza-offer-3', categoryId: 'pizza-offers', name: 'عرض أي 3 بيتزا', desc: 'اختار أي 3 بيتزا من الأصناف المتاحة', price: 458, badge: 'عرض مميز', available: true },
+
+            { id: 'drink-water', categoryId: 'drinks', name: 'مياه معدنية', desc: '', price: 13, badge: '', available: true },
+            { id: 'drink-v7', categoryId: 'drinks', name: 'V7 Super Soda', desc: '', price: 30, badge: '', available: true }
         ];
 
         // -----------------------------------------------------------------
@@ -630,6 +650,7 @@
                     const adminBtn = document.getElementById('adminBtnText');
                     if (adminBtn) adminBtn.textContent = isAdminLoggedIn ? 'لوحة التحكم (نشط)' : 'لوحة التحكم';
                     subscribeToFirestore();
+                    if (isAdminLoggedIn) addNewMenuItemsIfMissing().catch(error => console.error('Adding new menu items failed:', error));
                 });
             } catch (error) {
                 console.error("Firebase init failed, fallback to memory:", error);
@@ -640,6 +661,20 @@
 
             renderCategoryTabs();
             initQRCode();
+        }
+
+        // Add the newly approved pizza, offers, and drinks without touching existing menu records.
+        async function addNewMenuItemsIfMissing() {
+            if (!db || !currentUser || currentUser.uid !== ADMIN_UID) return;
+            const itemsCol = collection(db, 'artifacts', appId, 'public', 'data', 'menuItems');
+            const ids = ['pizza-margherita','pizza-vegetables','pizza-mix-cheese','pizza-milano-chicken','pizza-chicken-shawarma','pizza-bbq-chicken','pizza-chicken-ranch','pizza-hot-dog','pizza-super-shrimp','pizza-mix-meat-chicken','pizza-offer-2','pizza-offer-3','drink-water','drink-v7'];
+            for (const id of ids) {
+                const item = defaultInitialItems.find(entry => entry.id === id);
+                if (!item) continue;
+                const itemRef = doc(itemsCol, id);
+                const existing = await getDoc(itemRef);
+                if (!existing.exists()) await setDoc(itemRef, item);
+            }
         }
 
         // Firestore Realtime Listener
