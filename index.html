@@ -1116,12 +1116,15 @@
                 const isAvail = item.available !== false;
                 return `
                     <div class="bg-zinc-950 p-3 rounded-xl border ${isAvail ? 'border-zinc-800' : 'border-red-900/40'} flex flex-wrap items-center justify-between gap-3">
-                        <div class="flex-1 min-w-[180px]">
+                        <div class="flex items-center gap-3 flex-1 min-w-[180px]">
+                            ${item.imageUrl ? `<img src="${item.imageUrl}" alt="صورة ${item.name}" loading="lazy" class="w-14 h-14 rounded-lg object-cover border border-zinc-700 shrink-0" onerror="this.style.display='none'">` : `<div class="w-14 h-14 rounded-lg bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-500 shrink-0"><i class="fa-solid fa-image"></i></div>`}
+                            <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
                                 <h4 class="text-xs font-bold text-white">${item.name}</h4>
                                 ${item.badge ? `<span class="bg-amber-500/20 text-amber-400 text-[9px] px-1.5 py-0.5 rounded">${item.badge}</span>` : ''}
                             </div>
-                            <div class="text-[11px] text-zinc-400 mt-0.5">${item.price} ج.م • ${getCategoryName(item.categoryId)}</div>
+                                <div class="text-[11px] text-zinc-400 mt-0.5">${item.price} ج.م • ${getCategoryName(item.categoryId)}</div>
+                            </div>
                         </div>
 
                         <div class="flex items-center gap-3">
