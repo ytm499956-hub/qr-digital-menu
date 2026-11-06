@@ -29,6 +29,7 @@ export default async function handler(req, res) {
       console.warn("Cloudinary admin authorization mismatch", {
         requestId,
         uidMatchesAdmin: payload.sub === ADMIN_UID,
+        receivedTokenFingerprint: createHash("sha256").update(token).digest("hex").slice(0, 16),
         tokenSubLength: typeof payload.sub === "string" ? payload.sub.length : null,
         adminUidLength: ADMIN_UID.length,
         tokenSubFingerprint: createHash("sha256").update(String(payload.sub ?? "")).digest("hex").slice(0, 16),
