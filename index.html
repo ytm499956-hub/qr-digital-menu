@@ -851,18 +851,35 @@
             });
         }
 
+        function getTemporaryItemImage(item) {
+            if (item.imageUrl) return { url: item.imageUrl, temporary: false };
+            const images = {
+                sandwiches: 'https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/grilled_chicken_shawarma_sandwich.jpg',
+                'shawarma-meals': 'https://snapcalorie-webflow-website.s3.us-east-2.amazonaws.com/media/food_pics_v2/medium/grilled_chicken_shawarma_sandwich.jpg',
+                fatteh: 'https://falasteenifoodie.com/wp-content/uploads/2024/10/Delicious-Chicken-Fatteh-recipe-1-1197x800.jpg',
+                grill: 'https://www.halalworlddepot.com/cdn/shop/files/lenalepi_beautiful_food_photo_of_whole_grilled_chicken_top_view_afde3d97-cbf5-4c9c-b4fb-c750ba9642e9.png?v=1739960945&width=1445',
+                crispy: 'https://broastlounge.com/assets/hero-broast.png',
+                pizza: 'https://48y9ftle.cdn.imgeng.in/media/slike/530ff104a6c648af8f7b98de36583fd4.png?preset=opis',
+                'pizza-offers': 'https://48y9ftle.cdn.imgeng.in/media/slike/530ff104a6c648af8f7b98de36583fd4.png?preset=opis',
+                drinks: 'https://tehzeeb.com/media/resize/cat/resizedImage/512x512/catalog/category/512T.png'
+            };
+            return images[item.categoryId] ? { url: images[item.categoryId], temporary: true } : null;
+        }
+
         function createItemCard(item) {
             const card = document.createElement('div');
             const isAvailable = item.available !== false;
+            const displayImage = getTemporaryItemImage(item);
             
             card.className = `menu-card bg-zinc-900/90 border ${isAvailable ? 'border-zinc-800/90 hover:border-orange-500/40' : 'border-red-900/30 opacity-70'} rounded-2xl p-3.5 flex flex-col justify-between shadow-lg relative overflow-hidden group`;
 
             card.innerHTML = `
-                ${item.imageUrl ? `
-                    <div class="w-full aspect-[16/9] mb-3 rounded-xl overflow-hidden bg-zinc-800 border border-zinc-700/70">
-                        <img src="${item.imageUrl}" alt="صورة ${item.name}" loading="lazy"
+                ${displayImage ? `
+                    <div class="w-full aspect-[16/9] mb-3 rounded-xl overflow-hidden bg-zinc-800 border border-zinc-700/70 relative">
+                        <img src="${displayImage.url}" alt="صورة توضيحية لـ ${item.name}" loading="lazy"
                              class="w-full h-full object-cover"
                              onerror="this.parentElement.remove()">
+                        ${displayImage.temporary ? '<span class="absolute bottom-2 right-2 bg-black/75 text-white text-[10px] font-bold px-2 py-1 rounded-md">صورة توضيحية</span>' : ''}
                     </div>
                 ` : ''}
                 <div class="flex-1">
