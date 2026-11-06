@@ -1,7 +1,7 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { createHash } from "node:crypto";
 
-const ADMIN_UID = "khw0e6GUkZZReBQ9kl7xlgiQzNfN2";
+const ADMIN_UID = "khw0e6GUkZZReBQ9kl7xlgiQzNf2";
 const PROJECT_ID = "qr-digital-menu-72c1f";
 const JWKS = createRemoteJWKSet(
   new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com")
