@@ -1243,7 +1243,7 @@
         async function uploadSelectedItemImage() {
             if (!selectedItemImageFile) return null;
             if (!currentUser) throw new Error('يجب تسجيل الدخول كمسؤول لرفع الصورة');
-            const token = await currentUser.getIdToken();
+            const token = await currentUser.getIdToken(true);
             const signResponse = await fetch('/api/cloudinary-signature', {
                 method: 'POST',
                 headers: { Authorization: 'Bearer ' + token }
