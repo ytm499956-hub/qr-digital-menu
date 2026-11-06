@@ -1091,11 +1091,15 @@
             }
         };
 
-        window.logoutAdmin = function() {
-            isAdminLoggedIn = false;
-            document.getElementById('adminBtnText').textContent = 'لوحة التحكم';
-            closeModal('adminPanelModal');
-            showToast('تم الخروج من لوحة التحكم');
+        window.logoutAdmin = async function() {
+            try {
+                await signOut(auth);
+                closeModal('adminPanelModal');
+                showToast('تم تسجيل الخروج بنجاح');
+            } catch (error) {
+                console.error("Admin logout error:", error);
+                showToast('تعذر تسجيل الخروج. حاول مرة أخرى');
+            }
         };
 
         window.renderAdminMenu = function() {
