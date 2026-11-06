@@ -1255,9 +1255,14 @@
             } catch (diagnosticError) {
                 console.warn('Cloudinary identity diagnostic could not decode token');
             }
+            const debugRequestId = (crypto.randomUUID ? crypto.randomUUID() : 'upload-' + Date.now() + '-' + Math.random().toString(16).slice(2));
+            console.info('Cloudinary upload request ID:', debugRequestId);
             const signResponse = await fetch('/api/cloudinary-signature', {
                 method: 'POST',
-                headers: { Authorization: 'Bearer ' + token }
+                headers: {
+                    Authorization: 'Bearer ' + token,
+                    'X-Debug-Request-ID': debugRequestId
+                }
             });
             const signData = await signResponse.json();
             if (!signResponse.ok) throw new Error(signData.error || 'تعذر تجهيز رفع الصورة');
