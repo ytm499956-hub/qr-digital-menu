@@ -379,6 +379,17 @@
                            class="w-full bg-zinc-950 text-white text-xs rounded-xl px-3 py-2 border border-zinc-700 focus:outline-none focus:border-orange-500">
                 </div>
 
+                <div class="bg-zinc-950 p-3 rounded-xl border border-zinc-800">
+                    <label class="block text-xs font-bold text-zinc-300 mb-2">صورة الصنف (اختياري):</label>
+                    <input type="file" id="formItemImage" accept="image/*" onchange="previewItemImage(event)"
+                           class="block w-full text-xs text-zinc-400 file:ml-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-orange-600 file:text-white file:font-bold">
+                    <div id="formItemImagePreviewWrap" class="hidden mt-3">
+                        <img id="formItemImagePreview" alt="معاينة صورة الصنف" class="w-28 h-28 object-cover rounded-xl border border-zinc-700 mx-auto">
+                        <button type="button" onclick="removeItemImage()" class="mt-2 text-xs text-red-400 hover:text-red-300 font-bold">حذف الصورة</button>
+                    </div>
+                    <p class="text-[10px] text-zinc-500 mt-2">يمكنك اختيار صورة أو تغييرها أو حذفها. لن تظهر الصورة للعملاء في هذه المرحلة.</p>
+                </div>
+
                 <div class="flex items-center justify-between bg-zinc-950 p-2.5 rounded-xl border border-zinc-800">
                     <span class="text-xs font-bold text-zinc-300">حالة الصنف المبدئية:</span>
                     <label class="flex items-center gap-2 cursor-pointer">
@@ -1164,6 +1175,91 @@
             }
         };
 
+        // Optional item image state (dashboard form only)
+        let selectedItemImageFile = null;
+        let currentItemImageUrl = null;
+        let itemImageRemoved = false;
+        let itemImagePreviewObjectUrl = null;
+
+        function resetItemImageForm(imageUrl = null) {
+            selectedItemImageFile = null;
+            currentItemImageUrl = imageUrl || null;
+            itemImageRemoved = false;
+            const input = document.getElementById('formItemImage');
+            if (input) input.value = '';
+            if (itemImagePreviewObjectUrl) URL.revokeObjectURL(itemImagePreviewObjectUrl);
+            itemImagePreviewObjectUrl = null;
+            const wrap = document.getElementById('formItemImagePreviewWrap');
+            const img = document.getElementById('formItemImagePreview');
+            if (currentItemImageUrl) {
+                img.src = currentItemImageUrl;
+                wrap.classList.remove('hidden');
+            } else {
+                img.removeAttribute('src');
+                wrap.classList.add('hidden');
+            }
+        }
+
+        window.previewItemImage = function(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                showToast('من فضلك اختر ملف صورة صحيح');
+                event.target.value = '';
+                return;
+            }
+            if (file.size > 8 * 1024 * 1024) {
+                showToast('حجم الصورة يجب ألا يتجاوز 8 ميجابايت');
+                event.target.value = '';
+                return;
+            }
+            selectedItemImageFile = file;
+            itemImageRemoved = false;
+            if (itemImagePreviewObjectUrl) URL.revokeObjectURL(itemImagePreviewObjectUrl);
+            itemImagePreviewObjectUrl = URL.createObjectURL(file);
+            document.getElementById('formItemImagePreview').src = itemImagePreviewObjectUrl;
+            document.getElementById('formItemImagePreviewWrap').classList.remove('hidden');
+        };
+
+        window.removeItemImage = function() {
+            selectedItemImageFile = null;
+            itemImageRemoved = true;
+            currentItemImageUrl = null;
+            const input = document.getElementById('formItemImage');
+            if (input) input.value = '';
+            if (itemImagePreviewObjectUrl) URL.revokeObjectURL(itemImagePreviewObjectUrl);
+            itemImagePreviewObjectUrl = null;
+            document.getElementById('formItemImagePreview').removeAttribute('src');
+            document.getElementById('formItemImagePreviewWrap').classList.add('hidden');
+        };
+
+        async function uploadSelectedItemImage() {
+            if (!selectedItemImageFile) return null;
+            if (!currentUser) throw new Error('يجب تسجيل الدخول كمسؤول لرفع الصورة');
+            const token = await currentUser.getIdToken();
+            const signResponse = await fetch('/api/cloudinary-signature', {
+                method: 'POST',
+                headers: { Authorization: 'Bearer ' + token }
+            });
+            const signData = await signResponse.json();
+            if (!signResponse.ok) throw new Error(signData.error || 'تعذر تجهيز رفع الصورة');
+
+            const uploadData = new FormData();
+            uploadData.append('file', selectedItemImageFile);
+            uploadData.append('api_key', signData.apiKey);
+            uploadData.append('timestamp', String(signData.timestamp));
+            uploadData.append('folder', signData.folder);
+            uploadData.append('signature', signData.signature);
+
+            const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${signData.cloudName}/image/upload`, {
+                method: 'POST',
+                body: uploadData
+            });
+            const uploadResult = await uploadResponse.json();
+            if (!uploadResponse.ok) throw new Error(uploadResult.error?.message || 'فشل رفع الصورة');
+            return uploadResult.secure_url;
+        }
+
         // Open Add Item Modal
         window.openAddItemModal = function() {
             document.getElementById('formTitle').textContent = 'إضافة صنف جديد';
@@ -1174,6 +1270,7 @@
             document.getElementById('formItemDesc').value = '';
             document.getElementById('formItemBadge').value = '';
             document.getElementById('formItemAvailable').checked = true;
+            resetItemImageForm(null);
 
             openModal('itemFormModal');
         };
@@ -1191,6 +1288,7 @@
             document.getElementById('formItemDesc').value = item.desc || '';
             document.getElementById('formItemBadge').value = item.badge || '';
             document.getElementById('formItemAvailable').checked = item.available !== false;
+            resetItemImageForm(item.imageUrl || null);
 
             openModal('itemFormModal');
         };
@@ -1210,20 +1308,28 @@
             };
 
             try {
+                if (selectedItemImageFile) {
+                    showToast('جاري رفع الصورة...');
+                    itemData.imageUrl = await uploadSelectedItemImage();
+                } else if (itemImageRemoved) {
+                    itemData.imageUrl = null;
+                } else if (currentItemImageUrl) {
+                    itemData.imageUrl = currentItemImageUrl;
+                }
+
                 if (currentUser) {
                     const itemsCol = collection(db, 'artifacts', appId, 'public', 'data', 'menuItems');
                     if (itemId) {
-                        // Update existing
                         const itemDoc = doc(itemsCol, itemId);
                         await updateDoc(itemDoc, itemData);
                         showToast('تم تعديل الصنف بنجاح');
                     } else {
-                        // Add new
                         const newDocRef = doc(itemsCol);
                         await setDoc(newDocRef, { id: newDocRef.id, ...itemData });
                         showToast('تمت إضافة الصنف الجديد بنجاح');
                     }
                 } else {
+                    if (selectedItemImageFile) throw new Error('يجب تسجيل الدخول كمسؤول لرفع الصور');
                     if (itemId) {
                         const idx = menuItems.findIndex(i => i.id === itemId);
                         if (idx > -1) menuItems[idx] = { ...menuItems[idx], ...itemData };
@@ -1235,9 +1341,11 @@
                     showToast('تم حفظ التغييرات محلياً');
                 }
 
+                resetItemImageForm(null);
                 closeModal('itemFormModal');
             } catch (err) {
-                console.error("Error saving item:", err);                showToast("خطأ أثناء حفظ البيانات");
+                console.error("Error saving item:", err);
+                showToast(err.message || 'خطأ أثناء حفظ البيانات');
             }
         };
 
