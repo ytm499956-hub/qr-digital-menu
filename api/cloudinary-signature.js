@@ -23,16 +23,18 @@ export default async function handler(req, res) {
       audience: PROJECT_ID
     });
 
+    const requestId = req.headers["x-debug-request-id"] || "missing-request-id";
     if (payload.sub !== ADMIN_UID) {
-      // Temporary safe diagnostics: never log the UID or the token itself.
+      // Temporary correlation diagnostic: never log the UID or token.
       console.warn("Cloudinary admin authorization mismatch", {
+        requestId,
         uidMatchesAdmin: payload.sub === ADMIN_UID,
         audienceMatchesProject: payload.aud === PROJECT_ID,
         issuerMatchesProject: payload.iss === `https://securetoken.google.com/${PROJECT_ID}`,
         signInProvider: payload.firebase?.sign_in_provider || "unknown",
         isAnonymous: payload.firebase?.sign_in_provider === "anonymous"
       });
-      return res.status(403).json({ error: "Forbidden" });
+      return res.status(403).json({ error: "Forbidden", requestId });
     }
 
     const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
