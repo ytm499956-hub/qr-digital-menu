@@ -1244,6 +1244,17 @@
             if (!selectedItemImageFile) return null;
             if (!currentUser) throw new Error('يجب تسجيل الدخول كمسؤول لرفع الصورة');
             const token = await currentUser.getIdToken(true);
+            try {
+                const tokenPayload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                console.info('Cloudinary upload identity check', {
+                    browserUserMatchesAdmin: currentUser.uid === ADMIN_UID,
+                    tokenUserMatchesAdmin: tokenPayload.sub === ADMIN_UID,
+                    browserAndTokenMatch: currentUser.uid === tokenPayload.sub,
+                    tokenAudienceMatchesProject: tokenPayload.aud === 'qr-digital-menu-72c1f'
+                });
+            } catch (diagnosticError) {
+                console.warn('Cloudinary identity diagnostic could not decode token');
+            }
             const signResponse = await fetch('/api/cloudinary-signature', {
                 method: 'POST',
                 headers: { Authorization: 'Bearer ' + token }
