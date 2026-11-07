@@ -307,10 +307,6 @@
                         <i class="fa-solid fa-key"></i>
                         <span>تغيير الرقم السري</span>
                     </button>
-                    <button onclick="confirmResetData()" class="bg-zinc-800 hover:bg-red-950/40 text-red-400 hover:text-red-300 border border-red-500/20 px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                        <i class="fa-solid fa-rotate-left"></i>
-                        <span>إعادة للبيانات الافتراضية</span>
-                    </button>
                 </div>
             </div>
 
@@ -1423,37 +1419,6 @@
             openModal('confirmModal');
         };
 
-        // Reset Data to Initial Defaults
-        window.confirmResetData = function() {
-            document.getElementById('confirmTitle').textContent = 'استعادة البيانات الافتراضية';
-            document.getElementById('confirmMessage').textContent = 'هل ترغب في استبدال جميع البيانات الحالية بالمنيو الشامي الأصلي؟';
-
-            const btn = document.getElementById('confirmActionButton');
-            btn.onclick = async function() {
-                try {
-                    if (currentUser) {
-                        const itemsCol = collection(db, 'artifacts', appId, 'public', 'data', 'menuItems');
-                        const snap = await getDocs(itemsCol);
-                        const batch = writeBatch(db);
-                        snap.forEach(docSnap => batch.delete(docSnap.ref));
-                        await batch.commit();
-
-                        for (const item of defaultInitialItems) {
-                            const itemDoc = doc(itemsCol, item.id);
-                            await setDoc(itemDoc, item);
-                        }
-                    } else {
-                        menuItems = [...defaultInitialItems];
-                        renderMenu();
-                        renderAdminMenu();
-                    }
-                    closeModal('confirmModal');
-                    showToast('تمت استعادة البيانات الافتراضية بنجاح');
-                } catch (err) {
-                    console.error("Error resetting data:", err);
-                    showToast("خطأ أثناء إعادة الضبط");
-                }
-            };
 
             openModal('confirmModal');
         };
